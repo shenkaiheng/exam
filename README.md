@@ -13,4 +13,4 @@
 
 后台实现： JDK1.8  + Springbot + mybatis-plus+mysql
 
-前段实现：Vuejs + axios + 饿了么（ElementUI） 
+前段实现：Vuejs
