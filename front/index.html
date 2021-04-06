@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>github_test</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    #app {
+        margin: 20px;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <el-button type="primary">当前对应时间戳：{{dataTime}}</el-button>
+        <el-button type="success">当前对应时间：{{nowDate}}</el-button>
+        <el-button type="danger">当前对应时间戳：{{nowTime}}</el-button>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!',
+            dataTime: '',
+            nowDate: '',
+            nowTime: ''
+
+        },
+        mounted() {
+            this.findTime();
+            this.currentTime();
+        },
+        created() {
+
+        },
+
+        // 销毁定时器
+        beforeDestroy() {
+            if (this.formatDate) {
+                clearInterval(this.formatDate); // 在Vue实例销毁前，清除时间定时器
+            }
+
+            if (this.findTime) {
+                clearInterval(this.findTime); // 在Vue实例销毁前，清除时间定时器
+            }
+        },
+
+        methods: {
+            currentTime() {
+                // 1秒更新一次
+                setInterval(this.formatDate, 1000);
+                setInterval(this.findTime, 1000);
+            },
+
+            formatDate() {
+                let date = new Date();
+                let year = date.getFullYear(); // 年
+                let month = date.getMonth() + 1; // 月
+                let day = date.getDate(); // 日
+                let week = date.getDay(); // 星期
+                let weekArr = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+                let hour = date.getHours(); // 时
+                hour = hour < 10 ? "0" + hour : hour; // 如果只有一位，则前面补零
+                let minute = date.getMinutes(); // 分
+                minute = minute < 10 ? "0" + minute : minute; // 如果只有一位，则前面补零
+                let second = date.getSeconds(); // 秒
+                second = second < 10 ? "0" + second : second; // 如果只有一位，则前面补零
+                this.nowDate = `${year}/${month}/${day} ${hour}:${minute}:${second} ${weekArr[week]}`;
+                this.dataTime = Date.now();
+            },
+
+            findTime() {
+                let _self = this;
+                axios.get('http://localhost:8080/api/log/findTime')
+                    .then(function (response) {
+                        console.log(response);
+                        _self.nowTime = response.data.time
+                        console.log(this.nowTime)
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+
+        },
+    })
+</script>
+
+</html>
